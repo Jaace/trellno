@@ -1,0 +1,16 @@
+{
+  "parserOptions": {
+    "ecmaVersion": 2017,
+    "sourceType": "module"
+  },
+
+  "env": {
+    "es6": true
+  },
+  "rules": {
+    "quotes": [2, "single", { "allowTemplateLiterals": true }]
+  }
+  // "plugins": [
+  //   "prettier"
+  // ]
+}
