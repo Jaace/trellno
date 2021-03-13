@@ -1,9 +1,6 @@
 <script>
+  import { lists } from './stores.js';
   import Cards from './Cards.svelte';
-
-  const board = {
-    lists: ['To Do', 'Doing', 'Done'],
-  };
 
   function createList() {
     console.log('Create list...');
@@ -11,11 +8,10 @@
 </script>
 
 <ul>
-  {#each board.lists as list}
+  {#each $lists as list}
     <li>
-      <h2>{list}</h2>
-      <!-- TODO: Need a unique identifier per list as names and order can change. Using name for now. -->
-      <Cards listId={list} />
+      <h2 contenteditable bind:textContent={list.title}></h2>
+      <Cards listId={list.id} />
     </li>
   {/each}
   <li><button on:click={createList}>Add List</button></li>
@@ -32,6 +28,7 @@
     overflow: scroll;
     list-style-type: none;
     padding: 0;
+    text-align: left;
   }
 
   li {

@@ -16,7 +16,7 @@
       throw 'You must enter a title for this card.';
     }
     toggleCreate();
-    card = {};
+    card = { listId };
   }
 
   function toggleCreate() {
@@ -25,33 +25,21 @@
 </script>
 
 <ul>
-  {#each $cards as card, i}
+  {#each $cards as card}
     {#if card.listId === listId }
-    <li>Title: {card.title}<br />Description: {card.description}</li>
+    <li contenteditable bind:textContent={card.title}></li>
     {/if}
   {/each}
+  {#if createCardForm}
+    <li contenteditable bind:textContent={card.title}></li>
+  {/if}
 </ul>
 
 {#if !createCardForm}
   <button on:click={toggleCreate}>Create Card</button>
 {:else}
-  <div>
-    <label for="title"
-      >Title
-      <input bind:value={card.title} /></label
-    >
-    <label for="description"
-      >Description
-      <textarea bind:value={card.description} /></label
-    >
-    <div>
-      Preview:<br />
-      Title: {card.title}<br />
-      Description: {card.description}
-    </div>
-    <button on:click={toggleCreate}>Cancel</button>
-    <button on:click={createCard}>Save</button>
-  </div>
+  <button on:click={toggleCreate}>Cancel</button>
+  <button on:click={createCard}>Save</button>
 {/if}
 
 <style>
