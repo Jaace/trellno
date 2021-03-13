@@ -2,8 +2,18 @@
   import { lists } from './stores.js';
   import Cards from './Cards.svelte';
 
+  let listCreateForm = false;
+  let list = {};
+
   function createList() {
-    console.log('Create list...');
+    list.id = Math.random();
+    lists.update((lists) => [...lists, list]);
+    toggleCreate();
+    list = {};
+  }
+
+  function toggleCreate() {
+    listCreateForm = !listCreateForm;
   }
 </script>
 
@@ -14,7 +24,15 @@
       <Cards listId={list.id} />
     </li>
   {/each}
-  <li><button on:click={createList}>Add List</button></li>
+  <li>
+    {#if !listCreateForm}
+      <button on:click={toggleCreate}>Add List</button>
+    {:else}
+      <h2 contenteditable bind:textContent={list.title}></h2>
+      <button on:click={toggleCreate}>Cancel</button>
+      <button on:click={createList}>Save</button>
+    {/if}
+  </li>
 </ul>
 
 
