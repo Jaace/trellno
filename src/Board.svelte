@@ -9,20 +9,44 @@
   let list = {};
   const flipDurationMs = 200;
 
-  function createList() {
+  function addList() {
     list.id = Math.random();
     lists.update((lists) => [...lists, list]);
-    toggleCreate();
+  }
+
+  function saveList() {
+    if (list.title) {
+      addList(list);
+      toggleCreate();
+      list = {};
+    }
+  }
+
+  function cancelList() {
     list = {};
+    toggleCreate();
   }
 
   function toggleCreate() {
     listCreateForm = !listCreateForm;
   }
 
+  function keyboardControls(e) {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      return saveList();
+    }
+
+    if (e.key === 'Escape') {
+      e.preventDefault();
+      return cancelList();
+    }
+  }
+
   function handleDndConsiderColumns(e) {
     $lists = e.detail.items;
   }
+
   function handleDndFinalizeColumns(e) {
     $lists = e.detail.items;
   }
@@ -43,9 +67,17 @@
     {#if !listCreateForm}
       <button on:click={toggleCreate}>Add List</button>
     {:else}
-      <h2 contenteditable bind:textContent={list.title} />
-      <button on:click={toggleCreate}>Cancel</button>
-      <button on:click={createList}>Save</button>
+      <!-- svelte-ignore a11y-autofocus -->
+      <h2
+        contenteditable
+        bind:textContent={list.title}
+        autofocus
+        on:keydown={keyboardControls}
+        placeholder="Enter a title for this list..."
+      />
+
+      <button on:click={cancelList}>Cancel</button>
+      <button on:click={saveList}>Save</button>
     {/if}
   </li>
 </ul>
@@ -66,5 +98,14 @@
     background-color: rgb(235, 236, 240);
     border-radius: 3px;
     padding: 10px;
+  }
+
+  h2 {
+    cursor: text;
+  }
+
+  h2[placeholder]:empty:before {
+    color: rgba(0, 0, 0, 0.5);
+    content: attr(placeholder);
   }
 </style>
