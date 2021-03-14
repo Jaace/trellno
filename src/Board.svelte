@@ -52,16 +52,11 @@
 
 <style>
   ul {
-    height: 90vh;
-    width: 100%;
-    padding: 0.5em;
-    margin-bottom: 40px;
-
     display: grid;
     grid-auto-columns: 272px;
     grid-auto-flow: column;
     grid-gap: 8px;
-    overflow: scroll;
+    overflow-x: scroll;
     list-style-type: none;
     padding: 0;
     text-align: left;
