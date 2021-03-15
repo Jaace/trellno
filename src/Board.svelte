@@ -12,7 +12,7 @@
   function addList() {
     list.id = Math.random();
     list.cards = [];
-    lists.update((lists) => [...lists, list]);
+    $lists = [...lists.lists, list];
   }
 
   function saveList() {
@@ -33,6 +33,7 @@
   }
 
   function keyboardControls(e) {
+    e.stopPropagation();
     if (e.key === 'Enter') {
       e.preventDefault();
       return saveList();
@@ -45,21 +46,21 @@
   }
 
   function handleDndConsiderColumns(e) {
-    $lists = e.detail.items;
+    $lists.lists = e.detail.items;
   }
 
   function handleDndFinalizeColumns(e) {
-    $lists = e.detail.items;
+    $lists.lists = e.detail.items;
   }
 </script>
 
 <ul
-  use:dndzone={{ items: $lists, flipDurationMs, type: 'columns' }}
+  use:dndzone={{ items: $lists.lists, flipDurationMs, type: 'columns' }}
   on:consider={handleDndConsiderColumns}
   on:finalize={handleDndFinalizeColumns}
 >
-  {#each $lists as list (list.id)}
-    <li animate:flip={{ duration: flipDurationMs }}>
+  {#each $lists.lists as list (list.id)}
+    <li animate:flip={{ duration: flipDurationMs }} class="list">
       <h2 contenteditable bind:textContent={list.title} />
       <Cards listId={list.id} />
     </li>
@@ -95,10 +96,14 @@
     text-align: left;
   }
 
-  li {
+  .list {
     background-color: rgb(235, 236, 240);
     border-radius: 3px;
     padding: 10px;
+
+    display: grid;
+    grid-auto-rows: max-content;
+    grid-gap: 10px;
   }
 
   h2 {
