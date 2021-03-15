@@ -11,6 +11,7 @@
 
   function addList() {
     list.id = Math.random();
+    list.cards = [];
     lists.update((lists) => [...lists, list]);
   }
 

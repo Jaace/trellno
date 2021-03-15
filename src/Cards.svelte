@@ -1,23 +1,31 @@
 <script>
-  import { cards } from './stores.js';
+  import { flip } from 'svelte/animate';
+  import { dndzone } from 'svelte-dnd-action';
+
+  import { lists } from './stores.js';
   export let listId;
 
-  let card = { listId };
+  let card = {};
   let createCardForm = false;
+  const flipDurationMs = 200;
+
+  // Note: if this is not reactive, e.g. const listIndex, we get interesting rendering bugs.
+  $: listIndex = $lists.findIndex((storedList) => storedList.id === listId);
 
   function addCard(card) {
-    cards.update((cards) => [...cards, card]);
+    $lists[listIndex].cards = [...$lists[listIndex].cards, card];
   }
 
   function saveCard() {
     if (card.title) {
+      card.id = Math.random();
       addCard(card);
-      card = { listId };
+      card = {};
     }
   }
 
   function cancelCard() {
-    card = { listId };
+    card = {};
     toggleCreate();
   }
 
@@ -26,6 +34,7 @@
   }
 
   function keyboardControls(e) {
+    e.stopPropagation();
     if (e.key === 'Enter') {
       e.preventDefault();
       return saveCard();
@@ -36,13 +45,23 @@
       return cancelCard();
     }
   }
+
+  function handleDndConsiderCards(e) {
+    $lists[listIndex].cards = e.detail.items;
+  }
+
+  function handleDndFinalizeCards(e) {
+    $lists[listIndex].cards = e.detail.items;
+  }
 </script>
 
-<ul>
-  {#each $cards as card}
-    {#if card.listId === listId}
-      <li contenteditable bind:textContent={card.title} />
-    {/if}
+<ul
+  use:dndzone={{ items: $lists[listIndex].cards, flipDurationMs }}
+  on:consider={handleDndConsiderCards}
+  on:finalize={handleDndFinalizeCards}
+>
+  {#each $lists[listIndex].cards as card (card.id)}
+    <li contenteditable bind:textContent={card.title} animate:flip={{ duration: flipDurationMs }} />
   {/each}
   {#if createCardForm}
     <!-- svelte-ignore a11y-autofocus -->
@@ -69,6 +88,7 @@
     display: grid;
     grid-auto-rows: max-content;
     grid-gap: 10px;
+    min-height: 200px;
     padding: 0;
   }
 
