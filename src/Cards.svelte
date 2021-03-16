@@ -1,23 +1,31 @@
 <script>
-  import { cards } from './stores.js';
+  import { flip } from 'svelte/animate';
+  import { dndzone } from 'svelte-dnd-action';
+
+  import { lists } from './stores.js';
   export let listId;
 
-  let card = { listId };
+  let card = {};
   let createCardForm = false;
+  const flipDurationMs = 200;
+
+  // Note: if this is not reactive, e.g. const listIndex, we get interesting rendering bugs.
+  $: listIndex = $lists.lists.findIndex((storedList) => storedList.id === listId);
 
   function addCard(card) {
-    cards.update((cards) => [...cards, card]);
+    $lists.lists[listIndex].cards = [...$lists.lists[listIndex].cards, card];
   }
 
   function saveCard() {
     if (card.title) {
+      card.id = Math.random();
       addCard(card);
-      card = { listId };
+      card = {};
     }
   }
 
   function cancelCard() {
-    card = { listId };
+    card = {};
     toggleCreate();
   }
 
@@ -36,32 +44,50 @@
       return cancelCard();
     }
   }
+
+  function handleDndConsiderCards(e) {
+    $lists.lists[listIndex].cards = e.detail.items;
+  }
+
+  function handleDndFinalizeCards(e) {
+    $lists.lists[listIndex].cards = e.detail.items;
+  }
 </script>
 
-<ul>
-  {#each $cards as card}
-    {#if card.listId === listId}
-      <li contenteditable bind:textContent={card.title} />
-    {/if}
+<ul
+  class="list"
+  use:dndzone={{ items: $lists.lists[listIndex].cards, flipDurationMs }}
+  on:consider={handleDndConsiderCards}
+  on:finalize={handleDndFinalizeCards}
+>
+  {#each $lists.lists[listIndex].cards as card (card.id)}
+    <li animate:flip={{ duration: flipDurationMs }}>
+      <div>{card.title}</div>
+    </li>
   {/each}
+</ul>
+<ul>
   {#if createCardForm}
     <!-- svelte-ignore a11y-autofocus -->
-    <li
-      contenteditable
-      bind:textContent={card.title}
-      autofocus
-      on:keydown={keyboardControls}
-      placeholder="Enter a title for this card..."
-    />
+    <li>
+      <div
+        contenteditable
+        bind:textContent={card.title}
+        autofocus
+        on:keydown={keyboardControls}
+        placeholder="Enter a title for this card..."
+      />
+    </li>
   {/if}
 </ul>
-
-{#if !createCardForm}
-  <button on:click={toggleCreate}>Create Card</button>
-{:else}
-  <button on:click={cancelCard}>Cancel</button>
-  <button on:click={saveCard}>Save</button>
-{/if}
+<div>
+  {#if !createCardForm}
+    <button on:click={toggleCreate}>Create Card</button>
+  {:else}
+    <button on:click={cancelCard}>Cancel</button>
+    <button on:click={saveCard}>Save</button>
+  {/if}
+</div>
 
 <style>
   ul {
@@ -72,14 +98,21 @@
     padding: 0;
   }
 
+  .list {
+    min-height: 38px;
+  }
+
   li {
     background-color: white;
     border-radius: 3px;
     box-shadow: 0 1px 0 rgba(9, 30, 66, 0.25);
+  }
+
+  li div {
     padding: 10px;
   }
 
-  li[placeholder]:empty:before {
+  li div[placeholder]:empty:before {
     color: rgba(0, 0, 0, 0.5);
     content: attr(placeholder);
   }
