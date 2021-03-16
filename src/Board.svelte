@@ -54,18 +54,19 @@
   }
 </script>
 
-<ul
+<div
   use:dndzone={{ items: $lists.lists, flipDurationMs, type: 'columns' }}
   on:consider={handleDndConsiderColumns}
   on:finalize={handleDndFinalizeColumns}
+  class="board"
 >
   {#each $lists.lists as list (list.id)}
-    <li animate:flip={{ duration: flipDurationMs }} class="list">
+    <div animate:flip={{ duration: flipDurationMs }} class="list">
       <h2 contenteditable bind:textContent={list.title} />
       <Cards listId={list.id} />
-    </li>
+    </div>
   {/each}
-  <li>
+  <div>
     {#if !listCreateForm}
       <button on:click={toggleCreate}>Add List</button>
     {:else}
@@ -81,11 +82,11 @@
       <button on:click={cancelList}>Cancel</button>
       <button on:click={saveList}>Save</button>
     {/if}
-  </li>
-</ul>
+  </div>
+</div>
 
 <style>
-  ul {
+  .board {
     display: grid;
     grid-auto-columns: 272px;
     grid-auto-flow: column;

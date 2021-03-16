@@ -54,32 +54,31 @@
   }
 </script>
 
-<ul
+<div
   class="list"
   use:dndzone={{ items: $lists.lists[listIndex].cards, flipDurationMs }}
   on:consider={handleDndConsiderCards}
   on:finalize={handleDndFinalizeCards}
 >
   {#each $lists.lists[listIndex].cards as card (card.id)}
-    <li animate:flip={{ duration: flipDurationMs }}>
+    <div animate:flip={{ duration: flipDurationMs }} class="card">
       <div>{card.title}</div>
-    </li>
+    </div>
   {/each}
-</ul>
-<ul>
+</div>
+<div>
   {#if createCardForm}
     <!-- svelte-ignore a11y-autofocus -->
-    <li>
-      <div
-        contenteditable
-        bind:textContent={card.title}
-        autofocus
-        on:keydown={keyboardControls}
-        placeholder="Enter a title for this card..."
-      />
-    </li>
+    <div
+      class="card"
+      contenteditable
+      bind:textContent={card.title}
+      autofocus
+      on:keydown={keyboardControls}
+      placeholder="Enter a title for this card..."
+    />
   {/if}
-</ul>
+</div>
 <div>
   {#if !createCardForm}
     <button on:click={toggleCreate}>Create Card</button>
@@ -90,29 +89,26 @@
 </div>
 
 <style>
-  ul {
+  .list {
     list-style-type: none;
     display: grid;
     grid-auto-rows: max-content;
     grid-gap: 10px;
     padding: 0;
-  }
-
-  .list {
     min-height: 38px;
   }
 
-  li {
+  .card {
     background-color: white;
     border-radius: 3px;
     box-shadow: 0 1px 0 rgba(9, 30, 66, 0.25);
   }
 
-  li div {
+  div .card {
     padding: 10px;
   }
 
-  li div[placeholder]:empty:before {
+  .card[placeholder]:empty:before {
     color: rgba(0, 0, 0, 0.5);
     content: attr(placeholder);
   }
