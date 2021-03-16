@@ -12,12 +12,12 @@
   function addList() {
     list.id = Math.random();
     list.cards = [];
-    $lists = [...lists.lists, list];
+    $lists.lists = [...$lists.lists, list];
   }
 
   function saveList() {
     if (list.title) {
-      addList(list);
+      addList();
       toggleCreate();
       list = {};
     }
